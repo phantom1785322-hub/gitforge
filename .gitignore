@@ -1,0 +1,47 @@
+# GitForge .gitignore
+
+# Build artifacts
+/bin/
+/dist/
+/coverage.out
+/coverage.html
+/cpu.prof
+/mem.prof
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go
+go.sum
+go.work
+vendor/
+
+# Web UI build
+/web/dist/
+/web/node_modules/
+/web/.env
+/web/.env.local
+
+# Logs
+*.log
+*.out
+
+# Test
+*.test
+
+# Release
+*.tar.gz
+*.zip
+checksums/
+
+# Temporary
+/tmp/
+*.tmp
