@@ -1,0 +1,123 @@
+# .goreleaser.yml - GitForge Release Configuration
+# Complete cross-platform release automation
+
+project_name: gitforge
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: gitforge
+    main: ./cmd/gitforge
+    binary: gitforge
+    ldflags:
+      - -s
+      - -w
+      - -X main.version={{.Version}}
+      - -X main.buildTime={{.Date}}
+      - -X main.gitCommit={{.Commit}}
+    goos:
+      - linux
+      - darwin
+      - windows
+      - freebsd
+      - openbsd
+    goarch:
+      - amd64
+      - arm64
+      - armv7
+    ignore:
+      - goos: windows
+        goarch: armv7
+      - goos: openbsd
+        goarch: armv7
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+
+archives:
+  - formats: [tar.gz]
+    name_template: '{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}'
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+      - CHANGELOG.md
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^chore:'
+      - '^ci:'
+      - Merge pull request
+      - Merge branch
+
+release:
+  footer: |
+    ## 🚀 Installation
+
+    ### Universal Installer (Linux/macOS/WSL/Termux)
+    ```bash
+    curl -fsSL https://gitforge.dev/install.sh | bash
+    ```
+
+    ### Package Managers
+    ```bash
+    # macOS (Homebrew)
+    brew install phantom1785322-hub/tap/gitforge
+
+    # Windows (Scoop)
+    scoop bucket add gitforge https://github.com/phantom1785322-hub/scoop-gitforge
+    scoop install gitforge
+
+    # Windows (Chocolatey)
+    choco install gitforge
+
+    # Arch Linux (AUR)
+    yay -S gitforge
+
+    # Nix
+    nix profile install github:phantom1785322-hub/gitforge
+
+    # Termux (Android)
+    pkg install gitforge
+    ```
+
+    ### Manual Download
+    Download the archive for your platform from the assets below.
+
+    ## 📦 What's Included
+    - `gitforge` - Main binary
+    - `README.md` - Documentation
+    - `LICENSE` - MIT License
+    - `CHANGELOG.md` - Full changelog
+
+    ## 🎯 Quick Start
+    ```bash
+    gitforge tui      # Launch beautiful terminal UI
+    gitforge web      # Start web UI server
+    gitforge status   # Show repository status
+    gitforge log      # Show commit history with graph
+    gitforge doctor   # Run system diagnostics
+    ```
+
+    ## 🙏 Thanks
+    Thanks to all contributors! ❤️
+
+    ---
+    *Built with [aio-stack](https://github.com/phantom1785322-hub/aio-stack) • Powered by Go, Bubble Tea, and ❤️*

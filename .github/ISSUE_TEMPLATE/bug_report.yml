@@ -1,0 +1,109 @@
+name: Bug Report
+description: Report a bug in GitForge
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the form below.
+        
+        **Before submitting:**
+        - Check if the bug is already reported (search issues)
+        - Try the latest release: `gitforge version`
+        - Run `gitforge doctor` to verify your setup
+
+  - type: input
+    id: version
+    attributes:
+      label: GitForge Version
+      description: Run `gitforge version` and paste the output
+      placeholder: "GitForge version 0.1.0 (abc1234)"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: OS and version (e.g., Ubuntu 22.04, macOS 14.5, Windows 11, Termux)
+      placeholder: "Ubuntu 22.04 LTS"
+    validations:
+      required: true
+
+  - type: input
+    id: arch
+    attributes:
+      label: Architecture
+      description: CPU architecture (e.g., amd64, arm64, armv7)
+      placeholder: "amd64"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear and concise description of the bug
+      placeholder: "When I run `gitforge status` in a repo with 500+ files, it hangs for 30 seconds..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the bug
+      placeholder: |
+        1. Create a new repo with `git init`
+        2. Add 1000 files with `for i in {1..1000}; do echo $i > file$i; done`
+        3. Run `gitforge status`
+        4. Observe hang
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen
+      placeholder: "`gitforge status` should complete in under 1 second"
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened
+      placeholder: "`gitforge status` hangs for 30 seconds, CPU at 100%"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      description: Relevant logs, error messages, or `gitforge doctor` output
+      placeholder: |
+        $ gitforge doctor
+        ✅ Git: Found (2.43.0)
+        ✅ Config: Valid
+        ...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other information, config, or screenshots
+      placeholder: "Config: ~/.config/gitforge/config.toml (attached)"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I've searched existing issues and this is not a duplicate
+          required: true
+        - label: I'm using the latest release
+          required: true
+        - label: I've run `gitforge doctor` and it passes
+          required: false
+        - label: I've included `gitforge doctor` output
+          required: true

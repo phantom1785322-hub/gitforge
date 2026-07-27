@@ -1,0 +1,65 @@
+# Dependabot Configuration
+# Automated dependency updates for Go modules and GitHub Actions
+
+version: 2
+updates:
+  # Go modules
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "go"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps(dev)"
+    open-pull-requests-limit: 10
+    groups:
+      go-dev-tools:
+        patterns:
+          - "github.com/charmbracelet/*"
+          - "github.com/spf13/*"
+        update-types:
+          - "minor"
+          - "patch"
+      go-stdlib-extensions:
+        patterns:
+          - "golang.org/x/*"
+          - "google.golang.org/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:30"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci(dev)"
+
+  # Docker (when Dockerfile is added)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci(dev)"

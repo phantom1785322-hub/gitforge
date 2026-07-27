@@ -1,0 +1,84 @@
+# GitForge Release Workflow
+# Automatically builds and releases on tag push
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v0.2.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Homebrew Formula
+        if: success()
+        uses: mislav/bump-homebrew-formula-action@v4
+        with:
+          formula-name: gitforge
+          formula-path: Formula/gitforge.rb
+          tap-repo: phantom1785322-hub/homebrew-gitforge
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update gitforge formula to ${tag}"
+
+      - name: Notify Discord
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          RELEASE_URL="https://github.com/phantom1785322-hub/gitforge/releases/tag/${TAG}"
+          
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d @- << EOF
+          {
+            "embeds": [{
+              "title": "🚀 GitForge ${TAG} Released!",
+              "url": "${RELEASE_URL}",
+              "color": 5814783,
+              "description": "A beautiful, powerful Git client for terminal and browser.",
+              "fields": [
+                {"name": "🎨 TUI", "value": "3-panel Bubble Tea interface with visual commit graph", "inline": true},
+                {"name": "🌐 Web UI", "value": "Browser-based, PWA, offline-first", "inline": true},
+                {"name": "🤖 Local AI", "value": "Phi-3, CodeLlama via WebAssembly", "inline": true},
+                {"name": "🔌 Plugins", "value": "WASM + Go, hot-reload, capability-based security", "inline": true},
+                {"name": "📦 Platforms", "value": "Linux, macOS, Windows, Termux, FreeBSD, OpenBSD", "inline": true},
+                {"name": "🛠 Install", "value": "\`curl -fsSL https://gitforge.dev/install.sh | bash\`", "inline": false}
+              ],
+              "footer": {"text": "Built with Go, Bubble Tea, and aio-stack"},
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            }]
+          }
+          EOF

@@ -1,0 +1,79 @@
+name: Question / Support
+description: Ask a question about GitForge usage or configuration
+title: "[Question]: "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about GitForge? We're happy to help!
+        
+        **Before asking:**
+        - Check the [documentation](https://gitforge.dev/docs)
+        - Search existing [discussions](https://github.com/phantom1785322-hub/gitforge/discussions)
+        - Run `gitforge doctor` to verify your setup
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does your question relate to?
+      options:
+        - Installation / Setup
+        - Configuration
+        - TUI Usage
+        - Web UI
+        - CLI Commands
+        - AI Features
+        - Plugins
+        - Git Operations
+        - Cross-platform Issues
+        - Performance
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Be as specific as possible
+      placeholder: |
+        How do I configure GitForge to use a custom merge tool?
+        I've tried setting `core.editor` in git config but it doesn't seem to work...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What have you tried? What's your setup?
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - GitForge: v0.1.0
+        - Config: ~/.config/gitforge/config.toml (attached)
+        - I've tried: setting core.editor, GIT_EDITOR env var
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant Config
+      description: Share relevant parts of your config (sanitize tokens!)
+      placeholder: |
+        # ~/.config/gitforge/config.toml
+        [core]
+        editor = "nvim"
+        pager = "delta"
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I've checked the documentation
+          required: true
+        - label: I've searched existing issues/discussions
+          required: true
+        - label: I've run `gitforge doctor` and it passes
+          required: false

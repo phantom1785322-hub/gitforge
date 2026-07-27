@@ -1,0 +1,98 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for GitForge
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the form below.
+        
+        **Before submitting:**
+        - Check if the feature is already requested (search issues)
+        - Consider if it fits GitForge's scope (local-first, cross-platform, extensible)
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What's the use case?
+      placeholder: |
+        As a developer, I want to see a visual representation of my commit history in the terminal
+        so that I can understand branching and merging without leaving my terminal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution
+      placeholder: |
+        Add a `gitforge log --graph` command that renders an ASCII commit graph with colors,
+        similar to `git log --oneline --graph --all --decorate` but interactive.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Other solutions or workarounds you've considered
+      placeholder: |
+        - Using `git log --graph` directly (but not interactive)
+        - Using external tools like `tig` or `gitk` (but not integrated)
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Feature Scope
+      description: Which part of GitForge does this affect?
+      options:
+        - TUI (Terminal UI)
+        - Web UI
+        - CLI Commands
+        - AI Features
+        - Plugin System
+        - Git Operations
+        - Configuration
+        - Cross-platform / Build
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this to you?
+      options:
+        - Critical (blocking my workflow)
+        - High (would significantly improve my workflow)
+        - Medium (nice to have)
+        - Low (just an idea)
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Mockups, screenshots, related issues, or any other context
+      placeholder: |
+        - Mockup: (attached)
+        - Related: #123, #456
+        - Similar feature in: tig, lazygit, gitk
+
+  - type: checkboxes
+    id: willingness
+    attributes:
+      label: Willingness to Contribute
+      options:
+        - label: I'm willing to implement this feature
+          required: false
+        - label: I can help with testing
+          required: false
+        - label: I can help with documentation
+          required: false
+        - label: I just want to request the feature
+          required: false

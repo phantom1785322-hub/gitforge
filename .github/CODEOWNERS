@@ -1,0 +1,38 @@
+# Code Owners
+# These users will be automatically requested for review when changes are made to the files they own.
+
+# Global owners
+* @phantom1785322-hub
+
+# Documentation
+/docs/ @phantom1785322-hub
+README.md @phantom1785322-hub
+CHANGELOG.md @phantom1785322-hub
+
+# Core engine
+/internal/ @phantom1785322-hub
+
+# CLI commands
+/cmd/ @phantom1785322-hub
+
+# TUI
+/internal/tui/ @phantom1785322-hub
+
+# Web UI
+/web/ @phantom1785322-hub
+
+# Git operations
+/internal/git/ @phantom1785322-hub
+
+# Configuration
+/internal/config/ @phantom1785322-hub
+
+# Plugin system
+/internal/plugin/ @phantom1785322-hub
+
+# AI engine
+/internal/ai/ @phantom1785322-hub
+
+# Release / CI
+/.github/workflows/ @phantom1785322-hub
+.goreleaser.yml @phantom1785322-hub

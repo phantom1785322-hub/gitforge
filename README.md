@@ -2,17 +2,20 @@
 
 <div align="center">
 
-![GitForge Logo](https://raw.githubusercontent.com/gitforge/gitforge/main/assets/logo.png)
+![GitForge Logo](https://raw.githubusercontent.com/phantom1785322-hub/gitforge/main/assets/logo.png)
 
 **A beautiful, powerful Git client for your terminal and browser.**
 
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?logo=go)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/gitforge/gitforge/actions)
-[![Release](https://img.shields.io/github/v/release/gitforge/gitforge)](https://github.com/gitforge/gitforge/releases)
-[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows%20%7C%20termux-lightgrey)](https://github.com/gitforge/gitforge/releases)
+[![Build Status](https://github.com/phantom1785322-hub/gitforge/actions/workflows/ci.yml/badge.svg)](https://github.com/phantom1785322-hub/gitforge/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/phantom1785322-hub/gitforge)](https://github.com/phantom1785322-hub/gitforge/releases)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows%20%7C%20termux%20%7C%20bsd-lightgrey)](https://github.com/phantom1785322-hub/gitforge/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/phantom1785322-hub/gitforge)](https://goreportcard.com/report/github.com/phantom1785322-hub/gitforge)
+[![Go Reference](https://pkg.go.dev/badge/github.com/phantom1785322-hub/gitforge.svg)](https://pkg.go.dev/github.com/phantom1785322-hub/gitforge)
+[![Discord](https://img.shields.io/discord/123456789?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/gitforge)
 
-[Installation](#installation) • [Features](#features) • [Usage](#usage) • [Configuration](#configuration) • [Plugins](#plugins) • [Contributing](#contributing)
+[Installation](#installation) • [Features](#features) • [Usage](#usage) • [Configuration](#configuration) • [Plugins](#plugins) • [Contributing](#contributing) • [Security](#security) • [Code of Conduct](#code-of-conduct)
 
 </div>
 
@@ -120,10 +123,10 @@ curl -fsSL https://gitforge.dev/install.sh | bash
 ### Package Managers
 ```bash
 # Homebrew (macOS/Linux)
-brew install gitforge/tap/gitforge
+brew tap phantom1785322-hub/gitforge && brew install gitforge
 
 # Scoop (Windows)
-scoop bucket add gitforge https://github.com/gitforge/scoop-bucket
+scoop bucket add gitforge https://github.com/phantom1785322-hub/scoop-gitforge
 scoop install gitforge
 
 # Chocolatey (Windows)
@@ -133,7 +136,7 @@ choco install gitforge
 yay -S gitforge
 
 # Nix
-nix profile install github:gitforge/gitforge
+nix profile install github:phantom1785322-hub/gitforge
 
 # Termux (Android)
 pkg install gitforge
@@ -143,7 +146,7 @@ curl -fsSL https://gitforge.dev/install-termux.sh | bash
 
 ### From Source
 ```bash
-git clone https://github.com/gitforge/gitforge
+git clone https://github.com/phantom1785322-hub/gitforge
 cd gitforge
 make build
 # Binary at ./bin/gitforge
@@ -151,7 +154,7 @@ make build
 
 ### Docker
 ```bash
-docker run -it --rm -v $(pwd):/repo gitforge/gitforge:latest tui
+docker run -it --rm -v $(pwd):/repo ghcr.io/phantom1785322-hub/gitforge:latest tui
 ```
 
 ### Verify Installation
@@ -504,7 +507,7 @@ We ❤️ contributors! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ### Quick Start
 ```bash
-git clone https://github.com/gitforge/gitforge
+git clone https://github.com/phantom1785322-hub/gitforge
 cd gitforge
 make install-tools
 make dev          # Run TUI in dev mode
@@ -515,7 +518,7 @@ make check        # Run all checks (fmt, vet, lint, test)
 
 ### Development Workflow
 1. Fork the repo
-2. Create a feature branch
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make changes with tests
 4. Run `make check`
 5. Submit PR
@@ -523,8 +526,25 @@ make check        # Run all checks (fmt, vet, lint, test)
 ### Code Style
 - Standard Go formatting (`gofmt`, `goimports`)
 - Effective Go guidelines
-- Conventional commits
+- Conventional commits (`feat:`, `fix:`, `docs:`, etc.)
 - 80%+ test coverage for new code
+
+---
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for our vulnerability disclosure policy.
+
+- **No cloud required** — Local-first architecture
+- **No telemetry** — Zero data collection
+- **Supply chain security** — Verified dependencies, SBOM generation
+- **Regular audits** — govulncheck, gosec, CodeQL
+
+---
+
+## Code of Conduct
+
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). We follow the [Contributor Covenant](https://www.contributor-covenant.org/).
 
 ---
 
@@ -538,13 +558,14 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 GitForge stands on the shoulders of giants:
 
-- [Charmbracelet](https://charmbracelet.com/) — Bubble Tea, Lip Gloss, Bubbles
-- [libgit2](https://libgit2.org/) — Git library
-- [llama.cpp](https://github.com/ggerganov/llama.cpp) — Local LLM inference
-- [wasmer](https://wasmer.io/) — WASM runtime
-- [Cobra](https://cobra.dev/) — CLI framework
-- [Viper](https://github.com/spf13/viper) — Config management
-- All the amazing open-source themes and icons
+- **[Charmbracelet](https://charmbracelet.com/)** — Bubble Tea, Lip Gloss, Bubbles
+- **[libgit2](https://libgit2.org/)** — Git library
+- **[llama.cpp](https://github.com/ggerganov/llama.cpp)** — Local LLM inference
+- **[wasmer](https://wasmer.io/)** — WASM runtime
+- **[Tree-sitter](https://tree-sitter.github.io/)** — Incremental parsing
+- **[Cobra](https://cobra.dev/)** & **[Kong](https://github.com/alecthomas/kong)** — CLI frameworks
+- **[Viper](https://github.com/spf13/viper)** — Config management
+- **[aio-stack](https://github.com/phantom1785322-hub/aio-stack)** — Shared foundation
 
 ---
 
@@ -552,9 +573,15 @@ GitForge stands on the shoulders of giants:
 
 - 📖 [Documentation](https://gitforge.dev/docs)
 - 💬 [Discord Community](https://discord.gg/gitforge)
-- 🐛 [Issue Tracker](https://github.com/gitforge/gitforge/issues)
-- 💡 [Feature Requests](https://github.com/gitforge/gitforge/discussions/categories/ideas)
+- 🐛 [Issue Tracker](https://github.com/phantom1785322-hub/gitforge/issues)
+- 💡 [Feature Requests](https://github.com/phantom1785322-hub/gitforge/discussions/categories/ideas)
 - 📧 [Email](mailto:hello@gitforge.dev)
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ---
 

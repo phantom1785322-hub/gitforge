@@ -1,0 +1,235 @@
+# Auto-Promote Release Workflow
+# Add your secrets to GitHub repo settings first!
+
+name: Auto-Promote Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to promote (e.g., v0.2.0)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  # ==========================================
+  # TWITTER / X AUTO-POST
+  # ==========================================
+  tweet:
+    name: Post to Twitter/X
+    if: ${{ secrets.TWITTER_BEARER_TOKEN != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Tweet Content
+        id: tweet_content
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          REPO_URL="https://github.com/phantom1785322-hub/gitforge"
+          RELEASE_URL="${{ github.event.release.html_url || format('https://github.com/phantom1785322-hub/gitforge/releases/tag/{0}', github.event.inputs.tag) }}"
+          
+          # Tweet 1/3 - Main announcement
+          TWEET1="🚀 GitForge $TAG is out!
+          
+          ✨ TUI + Web UI + Local AI + Plugins
+          📦 Cross-platform: Linux, macOS, Windows, Termux, BSD
+          🔗 $RELEASE_URL
+          
+          #GitForge #GoLang #OpenSource #DevTools #Git"
+          
+          # Tweet 2/3 - Features
+          TWEET2="What's new in GitForge $TAG:
+          
+          🎨 3-panel TUI with visual commit graph
+          🌐 Web UI (PWA, offline-first)
+          🤖 Local AI: Phi-3, CodeLlama via WASM
+          🔌 Plugin system: WASM + Go, hot-reload
+          🛠 15+ commands: status, log, commit, diff, branch...
+          
+          Install: curl -fsSL https://gitforge.dev/install.sh | bash"
+          
+          # Tweet 3/3 - Built with
+          TWEET3="Built with ❤️ using:
+          • Go 1.23 + Bubble Tea (TUI)
+          • Lip Gloss (styling)
+          • llama.cpp via WASM (AI)
+          • wasmer/wazero (plugins)
+          • Tree-sitter (code intel)
+          • aio-stack (shared foundation)
+          
+          MIT licensed. Star ⭐ if you like it!
+          $REPO_URL"
+          
+          echo "tweet1<<EOF" >> $GITHUB_OUTPUT
+          echo "$TWEET1" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "tweet2<<EOF" >> $GITHUB_OUTPUT
+          echo "$TWEET2" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "tweet3<<EOF" >> $GITHUB_OUTPUT
+          echo "$TWEET3" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post Tweet 1
+        uses: ethomson/send-tweet-action@v1
+        with:
+          token: ${{ secrets.TWITTER_BEARER_TOKEN }}
+          status: ${{ steps.tweet_content.outputs.tweet1 }}
+
+      - name: Post Tweet 2 (Reply)
+        if: success()
+        run: |
+          echo "Tweet 1 posted. For thread, use Twitter API v2 directly."
+          echo "Tweet 2 content:"
+          echo "${{ steps.tweet_content.outputs.tweet2 }}"
+
+  # ==========================================
+  # DISCORD NOTIFICATION
+  # ==========================================
+  discord:
+    name: Notify Discord
+    if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          RELEASE_URL="${{ github.event.release.html_url || format('https://github.com/phantom1785322-hub/gitforge/releases/tag/{0}', github.event.inputs.tag) }}"
+          REPO_URL="https://github.com/phantom1785322-hub/gitforge"
+          
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d @- << EOF
+          {
+            "embeds": [{
+              "title": "🚀 GitForge ${TAG} Released!",
+              "url": "${RELEASE_URL}",
+              "color": 5814783,
+              "description": "A beautiful, powerful Git client for terminal and browser.",
+              "fields": [
+                {"name": "🎨 TUI", "value": "3-panel Bubble Tea interface with visual commit graph", "inline": true},
+                {"name": "🌐 Web UI", "value": "Browser-based, PWA, offline-first", "inline": true},
+                {"name": "🤖 Local AI", "value": "Phi-3, CodeLlama via WebAssembly", "inline": true},
+                {"name": "🔌 Plugins", "value": "WASM + Go, hot-reload, capability-based security", "inline": true},
+                {"name": "📦 Platforms", "value": "Linux, macOS, Windows, Termux, FreeBSD, OpenBSD", "inline": true},
+                {"name": "🛠 Install", "value": "\`curl -fsSL https://gitforge.dev/install.sh | bash\`", "inline": false}
+              ],
+              "footer": {"text": "Built with Go, Bubble Tea, and aio-stack"},
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            }]
+          }
+          EOF
+
+  # ==========================================
+  # DEV.TO CROSS-POST
+  # ==========================================
+  devto:
+    name: Publish to Dev.to
+    if: ${{ secrets.DEVTO_API_KEY != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          # Get commits since last tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            NOTES=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%an)" --no-merges)
+          else
+            NOTES=$(git log --pretty=format:"- %s (%an)" --no-merges -20)
+          fi
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Dev.to Article
+        uses: sinedied/publish-devto@v1
+        with:
+          api_key: ${{ secrets.DEVTO_API_KEY }}
+          title: "GitForge ${{ github.event.release.tag_name || github.event.inputs.tag }} Released! 🚀"
+          body: |
+            # GitForge ${{ github.event.release.tag_name || github.event.inputs.tag }} Released!
+            
+            **A beautiful, powerful Git client for terminal and browser.**
+            
+            ## ✨ What's New
+            ${{ steps.release_notes.outputs.notes }}
+            
+            ## 🎯 Features
+            - 🎨 **TUI** - 3-panel Bubble Tea interface with visual commit graph
+            - 🌐 **Web UI** - Browser-based, PWA, offline-first
+            - 🤖 **Local AI** - Phi-3, CodeLlama via WebAssembly (zero cloud)
+            - 🔌 **Plugins** - WASM + Go, hot-reload, capability-based security
+            - 📦 **Cross-platform** - Linux, macOS, Windows, Termux, BSD
+            - 🚀 **Single binary** - No runtime dependencies
+            
+            ## 🛠 Installation
+            ```bash
+            # Universal installer
+            curl -fsSL https://gitforge.dev/install.sh | bash
+            
+            # Package managers
+            brew install gitforge          # macOS/Linux
+            scoop install gitforge         # Windows
+            pkg install gitforge           # Termux
+            ```
+            
+            ## 🔗 Links
+            - **GitHub**: https://github.com/phantom1785322-hub/gitforge
+            - **Release**: https://github.com/phantom1785322-hub/gitforge/releases/tag/${{ github.event.release.tag_name || github.event.inputs.tag }}
+            - **Documentation**: https://gitforge.dev/docs
+            
+            ---
+            *Built with Go, Bubble Tea, and aio-stack. MIT licensed.*
+          published: true
+          tags: "go, git, cli, tui, opensource, ai, webassembly, devtools"
+
+  # ==========================================
+  # MASTODON POST (Federated - Easy!)
+  # ==========================================
+  mastodon:
+    name: Post to Mastodon
+    if: ${{ secrets.MASTODON_ACCESS_TOKEN != '' && secrets.MASTODON_INSTANCE != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Mastodon
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag }}"
+          RELEASE_URL="${{ github.event.release.html_url || format('https://github.com/phantom1785322-hub/gitforge/releases/tag/{0}', github.event.inputs.tag) }}"
+          
+          curl -X POST "https://${{ secrets.MASTODON_INSTANCE }}/api/v1/statuses" \
+            -H "Authorization: Bearer ${{ secrets.MASTODON_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"status\": \"🚀 GitForge $TAG released! A beautiful Git client with TUI, Web UI, Local AI, and Plugins. Cross-platform, single binary. $RELEASE_URL #GitForge #GoLang #OpenSource #DevTools\",
+              \"visibility\": \"public\"
+            }"
+
+  # ==========================================
+  # SUMMARY
+  # ==========================================
+  summary:
+    name: Promotion Summary
+    needs: [tweet, discord, devto, mastodon]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Summary
+        run: |
+          echo "=== Promotion Summary ==="
+          echo "Twitter: ${{ needs.tweet.result }}"
+          echo "Discord: ${{ needs.discord.result }}"
+          echo "Dev.to: ${{ needs.devto.result }}"
+          echo "Mastodon: ${{ needs.mastodon.result }}"
+          echo ""
+          echo "Check each platform for results!"
