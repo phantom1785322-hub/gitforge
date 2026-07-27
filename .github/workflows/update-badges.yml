@@ -28,7 +28,7 @@ jobs:
           echo "This workflow ensures the repo stays 'active' for badge services"
 
       - name: Update Release Badge
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: releases } = await github.rest.repos.listReleases({
